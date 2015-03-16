@@ -13,6 +13,8 @@ import diskInfo
 import time
 import operation
 from optparse import OptionParser
+import psutil
+
 try:
     import wmi
 except ImportError:
@@ -145,11 +147,19 @@ def architecture(option, opt_str, value, parser):
 def cpu(option, opt_str, value, parser):
     print "------cpu information------"
     if os == "Windows":
-        WinInfo.get_cpu_info(c,os,infolist)
+        tmplist = WinInfo.get_cpu_info(c,os,infolist)
     if os == "Linux":
-        linuxInfo.get_cpu_info(os,infolist)
- 
-
+        tmplist = linuxInfo.get_cpu_info(os,infolist)
+    #cpu percent
+    cpu_percent_list = psutil.cpu_percent(1,True)
+    i = 0
+    for percent in cpu_percent_list:
+        tempstr = "cpu"+str(i)
+        print tempstr+" percent: "+str(percent)+"%"
+        i = i+1
+    tmplist.append(cpu_percent_list)
+    infolist.append(tmplist)
+    
 #network list4
 def network(option, opt_str, value, parser):
     print "------network information------"
@@ -172,7 +182,7 @@ def disk(option, opt_str, value, parser):
     if os == "Linux":
         linuxInfo.get_disk_info(os,infolist)
     diskInfo.disk_info(infolist)
-
+    
 #mysql information list9
 def mysql(option, opt_str, value, parser):
     print "------mysql information------"

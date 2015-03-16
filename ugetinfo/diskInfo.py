@@ -8,6 +8,8 @@ Created on 2015��1��7��
 # Copyright (c) 2009, Giampaolo Rodola'. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+from __builtin__ import str
+from _ast import Str
 
 """
 List all mounted disk partitions a-la "df -h" command.
@@ -44,10 +46,16 @@ def bytes2human(n):
             return '%.1f%s' % (value, s)
     return "%sB" % n
 
+def disk_io(templist):
+    temptuple = psutil.disk_io_counters(perdisk=False)
+    print "disk_io : "+str(temptuple)
+    templist.append(temptuple)
+   
 def disk_info(infolist):
     templ = "%-17s %8s %8s %8s %5s%% %9s  %s"
     print_(templ % ("Device", "Total", "Used", "Free", "Use ", "Type",
                     "Mount"))
+    disklist = list()
     templist = list()
     for part in psutil.disk_partitions(all=False):
         tempdict =dict()
@@ -73,8 +81,12 @@ def disk_info(infolist):
             bytes2human(usage.free),
             int(usage.percent),
             part.fstype,
-            part.mountpoint))
-    infolist.append(templist)
+            part.mountpoint)) 
+    disklist.append(templist)   
+    disk_io(disklist)
+    infolist.append(disklist)
+    
+   
 
 def main():
     infolist = list()

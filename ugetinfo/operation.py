@@ -8,6 +8,7 @@ Created on 2015-1-9
 '''
 
 import xml.dom.minidom
+import psutil
 
 def init():
     global dom
@@ -68,14 +69,23 @@ def cpu_info_xml(infolist):
     cpuE.appendChild(modeE)
     #description
     descE = dom.createElement("description")
-    descT = dom.createTextNode(infolist[3]["model name"])
+    descT = dom.createTextNode(infolist[3][0]["model name"])
     descE.appendChild(descT)
     cpuE.appendChild(descE)
     #bit
     bitE = dom.createElement("bit")
     bitT = dom.createTextNode(infolist[2]["Abit"])
     bitE.appendChild(bitT)
-    cpuE.appendChild(bitE)
+    cpuE.appendChild(bitE)  
+    #cpu percent
+    percentE = dom.createElement("cpu_percent")
+    cpuE.appendChild(percentE)
+    for percent in infolist[3][1]:
+        #percent
+        oneE = dom.createElement("rate")
+        percentT = dom.createTextNode(str(percent))
+        oneE.appendChild(percentT)
+        percentE.appendChild(oneE)
     
 def network_info_xml(infolist):
     networkE = dom.createElement("network")
@@ -135,7 +145,7 @@ def disk_info_xml(infolist):
         devE.appendChild(devT)
         storeE.appendChild(devE)
     #list
-    templist = infolist[8]
+    templist = infolist[8][0]
     for i in templist:
         #partition
         parE = dom.createElement("partition")
@@ -147,7 +157,18 @@ def disk_info_xml(infolist):
         parE.setAttribute("type",i["fstype"])
         parE.setAttribute("mount",i["mountpoint"])
         storeE.appendChild(parE)    
-
+    #disk IO
+    nametuple = infolist[8][1]
+    ioE  = dom.createElement("IO_state")
+    ioE.setAttribute("read_count", str(nametuple.read_count))
+    ioE.setAttribute("write_count", str(nametuple.write_count))
+    ioE.setAttribute("read_bytes", str(nametuple.read_bytes))
+    ioE.setAttribute("write_bytes", str(nametuple.write_bytes))
+    ioE.setAttribute("read_time", str(nametuple.read_time))
+    ioE.setAttribute("write_time", str(nametuple.write_time))
+    storeE.appendChild(ioE)
+    
+    
 def bksrc_init():
     #backup source
     global bksrcE
@@ -160,17 +181,21 @@ def mysql_info_xml(infolist):
     temp = infolist[9]["mysql"]
     mysqlE.setAttribute("enable", str(temp))
     bksrcE.appendChild(mysqlE)
+    
     if temp:
-        #version
-        verE = dom.createElement("version")
-        verT = dom.createTextNode(infolist[9]["version"])
-        verE.appendChild(verT)
-        mysqlE.appendChild(verE)
-        #basedir
-        baseE = dom.createElement("install_path")
-        baseT = dom.createTextNode(infolist[9]["basedir"])
-        baseE.appendChild(baseT)
-        mysqlE.appendChild(baseE)
+        try:
+            #version
+            verE = dom.createElement("version")
+            verT = dom.createTextNode(infolist[9]["version"])
+            verE.appendChild(verT)
+            mysqlE.appendChild(verE)
+            #basedir
+            baseE = dom.createElement("install_path")
+            baseT = dom.createTextNode(infolist[9]["basedir"])
+            baseE.appendChild(baseT)
+            mysqlE.appendChild(baseE)
+        except Exception,e:
+            print e
  
 def oracle_info_xml(infolist):
 #Oracle info
@@ -179,16 +204,19 @@ def oracle_info_xml(infolist):
     oracleE.setAttribute("enable", str(temp))
     bksrcE.appendChild(oracleE)
     if temp:
-        #version
-        verE = dom.createElement("version")
-        verT = dom.createTextNode(infolist[10]["version"])
-        verE.appendChild(verT)
-        oracleE.appendChild(verE)
-        #basedir
-        baseE = dom.createElement("install_path")
-        baseT = dom.createTextNode(infolist[10]["basedir"])
-        baseE.appendChild(baseT)
-        oracleE.appendChild(baseE)           
+        try:
+            #version
+            verE = dom.createElement("version")
+            verT = dom.createTextNode(infolist[10]["version"])
+            verE.appendChild(verT)
+            oracleE.appendChild(verE)
+            #basedir
+            baseE = dom.createElement("install_path")
+            baseT = dom.createTextNode(infolist[10]["basedir"])
+            baseE.appendChild(baseT)
+            oracleE.appendChild(baseE)    
+        except Exception,e:
+            print e      
 
 def sqlserver_info_xml(infolist):
 #sqlserver info
@@ -197,16 +225,19 @@ def sqlserver_info_xml(infolist):
     sqlserverE.setAttribute("enable",str(temp))
     bksrcE.appendChild(sqlserverE)
     if temp:
-        #versuin
-        verE = dom.createElement("version")
-        verT = dom.createTextNode(infolist[11]["version"])
-        verE.appendChild(verT)
-        sqlserverE.appendChild(verE)
-        #basedir
-        baseE = dom.createElement("install_path")
-        baseT = dom.createTextNode(infolist[11]["basedir"])
-        baseE.appendChild(baseT)
-        sqlserverE.appendChild(baseE)
+        try:
+            #versuin
+            verE = dom.createElement("version")
+            verT = dom.createTextNode(infolist[11]["version"])
+            verE.appendChild(verT)
+            sqlserverE.appendChild(verE)
+            #basedir
+            baseE = dom.createElement("install_path")
+            baseT = dom.createTextNode(infolist[11]["basedir"])
+            baseE.appendChild(baseT)
+            sqlserverE.appendChild(baseE)
+        except Exception,e:
+            print e
 
 def sybase_info_xml(infolist):
  #sybase info
@@ -215,16 +246,19 @@ def sybase_info_xml(infolist):
     sybaseE.setAttribute("enable", str(temp))
     bksrcE.appendChild(sybaseE)
     if temp:
-        #versuin
-        verE = dom.createElement("version")
-        verT = dom.createTextNode(infolist[12]["version"])
-        verE.appendChild(verT)
-        sybaseE.appendChild(verE)
-        #basedir
-        baseE = dom.createElement("install_path")
-        baseT = dom.createTextNode(infolist[12]["basedir"])
-        baseE.appendChild(baseT)
-        sybaseE.appendChild(baseE)
+        try:
+            #versuin
+            verE = dom.createElement("version")
+            verT = dom.createTextNode(infolist[12]["version"])
+            verE.appendChild(verT)
+            sybaseE.appendChild(verE)
+            #basedir
+            baseE = dom.createElement("install_path")
+            baseT = dom.createTextNode(infolist[12]["basedir"])
+            baseE.appendChild(baseT)
+            sybaseE.appendChild(baseE)
+        except Exception,e:
+            print e
         
 def write_xml(xmlfile):
 #store to file

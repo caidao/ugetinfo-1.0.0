@@ -16,6 +16,7 @@ def get_cpu_info(sys,infolist):
     cpuinfo=dict()
     procinfo=dict()
     tempdict = dict()
+    templist = list()
     if sys == "Linux":
         ''' Return the information in /proc/cpuinfo
     as a dictionary in the following format:
@@ -42,7 +43,9 @@ def get_cpu_info(sys,infolist):
                     print temp1+" : "+temp2
                 else:
                     procinfo[line.split(':')[0].strip()] = ''
-        infolist.append(tempdict)
+        templist.append(tempdict)
+       # infolist.append(tempdict)
+        return templist
    
     
 def get_network_info(sys1,infolist):
@@ -94,7 +97,7 @@ def get_mysql_info(sys,infolist):
         templist = list()
         tempdict = dict()
         templist = get_info("ps -ef|grep mysqld|grep basedir").split("--")
-        if len(templist)==0:
+        if len(templist) <= 1:
             tempdict["mysql"]=False
             print "mysql server:"+str(tempdict["mysql"])
         else:
@@ -120,21 +123,24 @@ def get_mysql_info(sys,infolist):
 def get_oracle_info(sys,infolist):
     if sys == "Linux":
         tempdict = dict()
-
+         #ps -ef |grep oracle |awk \'/LISTENER/{print $8}\'
         temp = get_info(" ps -ef |grep oracle |awk \'/LISTENER/{print $8}\'")
-        if temp=="":
-            tempdict["oracle"]=False
-            print "oracle server:"+str(tempdict["oracle"])
-        else:
-            tempdict["oracle"]=True
-            print "oracle server:"+str(tempdict["oracle"])
-            tempdict["basedir"] = temp.split("bin")[0]
-            print "basedir:"+tempdict["basedir"]
-        #version
-            p = subprocess.Popen("su - oracle -c \'sqlplus -v\'", stdout=subprocess.PIPE, shell=True)
-            ver = p.communicate()[0].split("\n")[1]
-            tempdict["version"] = ver.split(":")[1]  
-            print "version:"+tempdict["version"]         
+        try:
+            if temp=="":
+                tempdict["oracle"]=False
+                print "oracle server:"+str(tempdict["oracle"])
+            else:
+                tempdict["oracle"]=True
+                print "oracle server:"+str(tempdict["oracle"])
+                tempdict["basedir"] = temp.split("bin")[0]
+                print "basedir:"+tempdict["basedir"]
+            #version
+                p = subprocess.Popen("su - oracle -c \'sqlplus -v\'", stdout=subprocess.PIPE, shell=True)
+                ver = p.communicate()[0].split("\n")[1]
+                tempdict["version"] = ver.split(":")[1]  
+                print "version:"+tempdict["version"] 
+        except Exception,e:
+            print e        
     infolist.append(tempdict)
   
 if __name__ == "__main__":
