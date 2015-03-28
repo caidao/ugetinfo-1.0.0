@@ -72,29 +72,33 @@ def all_info(option, opt_str, value, parser):
     
     operation.bksrc_init()
     
-    mysql(True, opt_str, value, parser)
+   
     try:
+        mysql(True, opt_str, value, parser)
         operation.mysql_info_xml(infolist)
     except Exception,e:
         print "Error:",e
     
-    oracle(True, opt_str, value, parser)
+    
     try:
+        oracle(True, opt_str, value, parser)
         operation.oracle_info_xml(infolist)
     except Exception,e:
         print "Error:",e
     
-    sqlserver(True, opt_str, value, parser)
+    
     try:
+        sqlserver(True, opt_str, value, parser)
         operation.sqlserver_info_xml(infolist)
     except Exception,e:
         print "Error:",e  
     
-    sybase(True, opt_str, value, parser)
+    
     try:
+        sybase(True, opt_str, value, parser)
         operation.sybase_info_xml(infolist)
     except Exception,e:
-        print "Error:",e     
+        print "Error:",e
     
     operation.write_xml(xmlFile)
     
