@@ -12,4 +12,4 @@
 	* 数据库版本和安装路径：Mysql、oracle、sqlserver、sybase、db2
 
 
-（3）详细介绍：可参考我的csdn博客
+（3）详细介绍：可参考我的csdn博客   http://blog.csdn.net/caidaoqq/article/details/44706159
